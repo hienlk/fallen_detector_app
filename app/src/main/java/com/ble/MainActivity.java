@@ -64,8 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
     private static final int REQUEST_CODE_BLUETOOTH_PERMISSIONS = 3;
 
-    private static final String PREF_NAME = "AppPreferences";
-    private static final String KEY_PHONE = "phone_number";
+    public static final String PREF_NAME = "MyAppPreferences";
+    public static final String KEY_PHONE = "saved_phone_number";
+
 
     private LinearLayout layout_setting;
     private TextView txt_setting;
@@ -452,12 +453,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.putString(KEY_PHONE, phoneNumber);
         editor.apply();
     }
-
-//    // Method to retrieve phone number
-//    public String getPhoneNumber() {
-//        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-//        return preferences.getString(KEY_PHONE, ""); // "" is the default value if no phone number is found
-//    }
-
 
 }

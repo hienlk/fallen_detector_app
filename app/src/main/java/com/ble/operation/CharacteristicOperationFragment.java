@@ -1,5 +1,11 @@
 package com.ble.operation;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.telephony.SmsManager;
+import android.widget.Toast;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -9,6 +15,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.content.Context;
+
+
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import com.ble.MainActivity;
+
+import android.location.Location;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 
 import androidx.fragment.app.Fragment;
@@ -28,6 +45,9 @@ import java.util.List;
 
 public class CharacteristicOperationFragment extends Fragment {
 
+    private FusedLocationProviderClient fusedLocationClient;
+
+
     public static final int PROPERTY_READ = 1;
     public static final int PROPERTY_WRITE = 2;
     public static final int PROPERTY_WRITE_NO_RESPONSE = 3;
@@ -36,6 +56,13 @@ public class CharacteristicOperationFragment extends Fragment {
 
     private LinearLayout layout_container;
     private final List<String> childList = new ArrayList<>();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -234,7 +261,11 @@ public class CharacteristicOperationFragment extends Fragment {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            addText(txt, new String(characteristic.getValue()));
+                                            String receivedData = new String(data);
+                                            addText(txt, receivedData);
+                                            if ("Fallen".equals(receivedData) && "0000fef5-0000-1000-8000-00805f9b34fb".equals(characteristic.getUuid().toString())) {
+                                                sendSMS();
+                                            }
                                         }
                                     });
                                 }
@@ -308,5 +339,43 @@ public class CharacteristicOperationFragment extends Fragment {
         if (offset > textView.getHeight()) {
             textView.scrollTo(0, offset - textView.getHeight());
         }
+    }
+
+    private void sendSMS() {
+        SharedPreferences preferences = getActivity().getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE);
+        String phoneNumber = preferences.getString(MainActivity.KEY_PHONE, "");
+
+        if (phoneNumber.isEmpty()) {
+            Toast.makeText(getActivity(), "Phone number not set. Please set it in settings.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check for location permission
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    String message = "Fallen Detected. Location: https://maps.google.com/?q="
+                            + location.getLatitude() + "," + location.getLongitude();
+
+                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        SmsManager smsManager = SmsManager.getDefault();
+                        smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+                        Toast.makeText(getActivity(), "SMS sent to " + phoneNumber, Toast.LENGTH_SHORT).show();
+                    } else {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.SEND_SMS}, 1);
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Unable to retrieve location. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
