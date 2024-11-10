@@ -12,7 +12,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:title="@string/app_name"
-        app:titleTextColor="@android:color/white" />
+        app:titleTextColor="@android:color/white"
+        android:layout_gravity="center" />
 
     <LinearLayout
         android:id="@+id/layout_setting"
@@ -32,6 +33,15 @@
             android:text="@string/scan_setting"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/et_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_phone"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="13sp" />
 
         <EditText
             android:id="@+id/et_name"
@@ -89,7 +99,9 @@
             android:id="@+id/btn_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="76dp"
+            android:layout_toStartOf="@+id/img_loading"
             android:text="@string/start_scan" />
 
         <ImageView
@@ -104,6 +116,11 @@
 
     </RelativeLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <ListView
         android:id="@+id/list_device"
         android:layout_width="match_parent"
@@ -115,6 +132,16 @@
         android:paddingEnd="5dp"
         android:scrollbars="none" />
 
+    </FrameLayout>
+    <ImageButton
+        android:id="@+id/btn_setting"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_button"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="10dp"
+        android:elevation="10dp"
+        android:drawableStart="@drawable/ic_setting"
+        android:padding="1dp" />
 
-</LinearLayout>
-
+    </LinearLayout>

@@ -21,12 +21,17 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.Dialog;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,12 +64,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
     private static final int REQUEST_CODE_BLUETOOTH_PERMISSIONS = 3;
 
+    private static final String PREF_NAME = "AppPreferences";
+    private static final String KEY_PHONE = "phone_number";
+
     private LinearLayout layout_setting;
     private TextView txt_setting;
     private Button btn_scan;
     private EditText et_name, et_mac, et_uuid;
     private Switch sw_auto;
     private ImageView img_loading;
+
+    private ImageButton btn_setting ;
+
 
     private Animation operatingAnim;
     private DeviceAdapter mDeviceAdapter;
@@ -99,17 +110,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btn_scan) {
+        int id = v.getId();
+        if (id == R.id.btn_scan) {
             if (btn_scan.getText().equals(getString(R.string.start_scan))) {
                 checkPermissions();
             } else if (btn_scan.getText().equals(getString(R.string.stop_scan))) {
                 BleManager.getInstance().cancelScan();
             }
-        } else if (v.getId() == R.id.txt_setting) {
+        } else if (id == R.id.txt_setting) {
             layout_setting.setVisibility(layout_setting.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             txt_setting.setText(layout_setting.getVisibility() == View.VISIBLE ?
                     getString(R.string.retrieve_search_settings) : getString(R.string.expand_search_settings));
+        }    else if (id == R.id.btn_setting) {
+            showPhoneInputDialog();
+
         }
+
     }
 
     private void initView() {
@@ -119,6 +135,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_scan = findViewById(R.id.btn_scan);
         btn_scan.setText(getString(R.string.start_scan));
         btn_scan.setOnClickListener(this);
+
+        btn_setting = findViewById(R.id.btn_setting);
+        btn_setting.setOnClickListener(this);
 
         et_name = findViewById(R.id.et_name);
         et_mac = findViewById(R.id.et_mac);
@@ -167,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView_device.setAdapter(mDeviceAdapter);
     }
 
+
+
     private void showConnectedDevice() {
         List<BleDevice> deviceList = BleManager.getInstance().getAllConnectedDevice();
         mDeviceAdapter.clearConnectedDevice();
@@ -175,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         mDeviceAdapter.notifyDataSetChanged();
     }
+
 
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -394,84 +416,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-//    @Override
-//    public final void onRequestPermissionsResult(int requestCode,
-//                                                 @NonNull String[] permissions,
-//                                                 @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (REQUEST_CODE_PERMISSION_LOCATION == requestCode && grantResults.length > 0) {
-//            for (int i = 0; i < grantResults.length; i++) {
-//                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-//                    onPermissionGranted(permissions[i]);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void checkPermissions() {
-//        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-//        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-//        if (!bluetoothAdapter.isEnabled()) {
-//            Toast.makeText(this, getString(R.string.please_open_blue), Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
-//        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-//        List<String> permissionDeniedList = new ArrayList<>();
-//        for (String permission : permissions) {
-//            int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
-//            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-//                onPermissionGranted(permission);
-//            } else {
-//                permissionDeniedList.add(permission);
-//            }
-//        }
-//        if (!permissionDeniedList.isEmpty()) {
-//            String[] deniedPermissions = permissionDeniedList.toArray(new String[0]);
-//            ActivityCompat.requestPermissions(this, deniedPermissions, REQUEST_CODE_PERMISSION_LOCATION);
-//        }
-//    }
-//
-//    private void onPermissionGranted(String permission) {
-//        switch (permission) {
-//            case Manifest.permission.ACCESS_FINE_LOCATION:
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkGPSIsOpen()) {
-//                    new AlertDialog.Builder(this)
-//                            .setTitle(R.string.notifyTitle)
-//                            .setMessage(R.string.gpsNotifyMsg)
-//                            .setNegativeButton(R.string.cancel,
-//                                    new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            finish();
-//                                        }
-//                                    })
-//                            .setPositiveButton(R.string.setting,
-//                                    new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                                            startActivityForResult(intent, REQUEST_CODE_OPEN_GPS);
-//                                        }
-//                                    })
-//
-//                            .setCancelable(false)
-//                            .show();
-//                } else {
-//                    setScanRule();
-//                    startScan();
-//                }
-//                break;
-//        }
-//    }
-
-//    private boolean checkGPSIsOpen() {
-//        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        if (locationManager == null)
-//            return false;
-//        return locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -482,5 +426,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+    private void showPhoneInputDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_phone_input);
+        dialog.setTitle("Enter Phone Number");
+
+        EditText et_phone_number = dialog.findViewById(R.id.et_phone_number);
+        Button btnAccept = dialog.findViewById(R.id.btn_accept);
+
+        btnAccept.setOnClickListener(v -> {
+            String phoneNumber = et_phone_number.getText().toString();
+            et_phone_number.setText(phoneNumber);
+            savePhoneNumber(phoneNumber);
+            dialog.dismiss();
+            Toast.makeText(this,"Saved",Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.show();
+    }
+
+    private void savePhoneNumber(String phoneNumber) {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_PHONE, phoneNumber);
+        editor.apply();
+    }
+
+//    // Method to retrieve phone number
+//    public String getPhoneNumber() {
+//        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+//        return preferences.getString(KEY_PHONE, ""); // "" is the default value if no phone number is found
+//    }
+
 
 }

@@ -194,6 +194,7 @@ public class CharacteristicListFragment extends Fragment {
             TextView txt_uuid;
             TextView txt_type;
             ImageView img_next;
+            //Thêm phần data dành cho notify, read và write
         }
     }
 }
