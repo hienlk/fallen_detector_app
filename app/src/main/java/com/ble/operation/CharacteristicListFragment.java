@@ -24,7 +24,7 @@ import com.ble.R;
 import java.util.ArrayList;
 import java.util.List;
 
-//@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+
 public class CharacteristicListFragment extends Fragment {
 
     private ResultAdapter mResultAdapter;

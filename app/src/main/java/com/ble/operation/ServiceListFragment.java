@@ -1,6 +1,6 @@
 package com.ble.operation;
 
-import android.annotation.TargetApi;
+
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
@@ -23,7 +23,7 @@ import com.clj.fastble.data.BleDevice;
 import java.util.ArrayList;
 import java.util.List;
 
-//@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+
 public class ServiceListFragment extends Fragment {
 
     private TextView txt_name, txt_mac;

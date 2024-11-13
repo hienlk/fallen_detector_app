@@ -30,7 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.Dialog;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
 
 
 import androidx.annotation.NonNull;
@@ -308,11 +308,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boolean isAutoConnect = sw_auto.isChecked();
 
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
-                .setServiceUuids(serviceUuids)      // 只扫描指定的服务的设备，可选
-                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
-                .setDeviceMac(mac)                  // 只扫描指定mac的设备，可选
-                .setAutoConnect(isAutoConnect)      // 连接时的autoConnect参数，可选，默认false
-                .setScanTimeOut(10000)              // 扫描超时时间，可选，默认10秒
+                .setServiceUuids(serviceUuids)
+                .setDeviceName(true, names)
+                .setDeviceMac(mac)
+                .setAutoConnect(isAutoConnect)
+                .setScanTimeOut(10000)
                 .build();
         BleManager.getInstance().initScanRule(scanRuleConfig);
     }
@@ -389,33 +389,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void readRssi(BleDevice bleDevice) {
-        BleManager.getInstance().readRssi(bleDevice, new BleRssiCallback() {
-            @Override
-            public void onRssiFailure(BleException exception) {
-                Log.i(TAG, "onRssiFailure" + exception.toString());
-            }
-
-            @Override
-            public void onRssiSuccess(int rssi) {
-                Log.i(TAG, "onRssiSuccess: " + rssi);
-            }
-        });
-    }
-
-    private void setMtu(BleDevice bleDevice, int mtu) {
-        BleManager.getInstance().setMtu(bleDevice, mtu, new BleMtuChangedCallback() {
-            @Override
-            public void onSetMTUFailure(BleException exception) {
-                Log.i(TAG, "onsetMTUFailure" + exception.toString());
-            }
-
-            @Override
-            public void onMtuChanged(int mtu) {
-                Log.i(TAG, "onMtuChanged: " + mtu);
-            }
-        });
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
