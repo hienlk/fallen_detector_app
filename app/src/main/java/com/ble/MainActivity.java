@@ -31,7 +31,11 @@ import android.widget.Toast;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 
-
+import android.telephony.SmsManager;
+import android.location.Location;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +50,7 @@ import com.ble.operation.OperationActivity;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleMtuChangedCallback;
+import com.clj.fastble.callback.BleNotifyCallback;
 import com.clj.fastble.callback.BleRssiCallback;
 import com.clj.fastble.callback.BleScanCallback;
 import com.clj.fastble.data.BleDevice;
@@ -63,9 +68,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_OPEN_GPS = 1;
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
     private static final int REQUEST_CODE_BLUETOOTH_PERMISSIONS = 3;
+    private static final int REQUEST_CODE_SMS_PERMISSION = 4;
+    private static final int REQUEST_CODE_SMS_RE_PERMISSION = 5;
 
     public static final String PREF_NAME = "MyAppPreferences";
     public static final String KEY_PHONE = "saved_phone_number";
+
+    private static final String FALLEN_VALUE = "Fallen";
+    private static final UUID SERVICE_UUID = UUID.fromString("00000180-0000-1000-8000-00805f9b34fb");
+    private static final UUID CHAR_UUID = UUID.fromString("0000fef5-0000-1000-8000-00805f9b34fb");
 
 
     private LinearLayout layout_setting;
@@ -201,13 +212,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            String[] permissions = {Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION};
+            String[] permissions = {Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS};
             List<String> deniedPermissions = new ArrayList<>();
 
             for (String permission : permissions) {
                 if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                     deniedPermissions.add(permission);
                 }
+            }
+
+            if(checkSelfPermission(Manifest.permission.SEND_SMS ) == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS permission granted", Toast.LENGTH_LONG).show();
+            } else{
+                requestPermissions(new String[] {Manifest.permission.SEND_SMS}, REQUEST_CODE_SMS_PERMISSION);
+            }
+
+            if(checkSelfPermission(Manifest.permission.RECEIVE_SMS ) == PackageManager.PERMISSION_GRANTED) {
+            } else{
+                requestPermissions(new String[] {Manifest.permission.RECEIVE_SMS}, REQUEST_CODE_SMS_RE_PERMISSION);
             }
 
             if (!deniedPermissions.isEmpty()) {
@@ -251,11 +273,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
+    private void checkSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    REQUEST_CODE_SMS_PERMISSION
+            );
+        } else {
+
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE_BLUETOOTH_PERMISSIONS) {
+        if (requestCode == REQUEST_CODE_SMS_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sendSMS();
+            } else {
+                Toast.makeText(this, "SMS permission is required to send messages", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_CODE_BLUETOOTH_PERMISSIONS) {
             boolean allGranted = true;
 
             for (int grantResult : grantResults) {
@@ -369,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 progressDialog.dismiss();
                 mDeviceAdapter.addDevice(bleDevice);
                 mDeviceAdapter.notifyDataSetChanged();
+                check_fallen(bleDevice);
             }
 
             @Override
@@ -426,5 +468,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.putString(KEY_PHONE, phoneNumber);
         editor.apply();
     }
+
+    private void check_fallen(BleDevice bleDevice) {
+        BleManager.getInstance().notify(
+                bleDevice,
+                SERVICE_UUID.toString(),
+                CHAR_UUID.toString(),
+                new BleNotifyCallback() {
+                    @Override
+                    public void onNotifySuccess() {
+                        Log.i(TAG, "Notify started successfully");
+                    }
+
+                    @Override
+                    public void onNotifyFailure(BleException exception) {
+                        Log.e(TAG, "Notify failed: " + exception.toString());
+                    }
+
+                    @Override
+                    public void onCharacteristicChanged(byte[] data) {
+                        String value = new String(data);
+                        if (FALLEN_VALUE.equals(value)) {
+                            sendSMS();
+                        }
+                    }
+                });
+    }
+
+    private void sendSMS() {
+        SharedPreferences preferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE);
+        String phoneNumber = preferences.getString(MainActivity.KEY_PHONE, "");
+
+        if (phoneNumber.isEmpty()) {
+            Toast.makeText(this, "Phone number not set. Please set it in settings.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+            return;
+        }
+
+        checkSmsPermission();
+
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                String message = "Fallen Detected. Location: https://maps.google.com/?q="
+                        + location.getLatitude() + "," + location.getLongitude();
+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                    SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(SmsManager.getDefaultSmsSubscriptionId());
+                    smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+                    Toast.makeText(this, "SMS sent to " + phoneNumber, Toast.LENGTH_SHORT).show();
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
+                }
+            } else {
+                Toast.makeText(this, "Unable to retrieve location. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
 }
