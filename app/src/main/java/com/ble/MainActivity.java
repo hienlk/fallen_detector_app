@@ -32,10 +32,8 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 
 import android.telephony.SmsManager;
-import android.location.Location;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,9 +47,7 @@ import com.ble.comm.ObserverManager;
 import com.ble.operation.OperationActivity;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
-import com.clj.fastble.callback.BleMtuChangedCallback;
 import com.clj.fastble.callback.BleNotifyCallback;
-import com.clj.fastble.callback.BleRssiCallback;
 import com.clj.fastble.callback.BleScanCallback;
 import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
@@ -79,11 +75,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final UUID CHAR_UUID = UUID.fromString("0000fef5-0000-1000-8000-00805f9b34fb");
 
 
-    private LinearLayout layout_setting;
-    private TextView txt_setting;
+//    private LinearLayout layout_setting;
+//    private TextView txt_setting;
     private Button btn_scan;
-    private EditText et_name, et_mac, et_uuid;
-    private Switch sw_auto;
+//    private EditText et_name, et_mac, et_uuid;
+//    private Switch sw_auto;
     private ImageView img_loading;
 
     private ImageButton btn_setting ;
@@ -129,10 +125,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if (btn_scan.getText().equals(getString(R.string.stop_scan))) {
                 BleManager.getInstance().cancelScan();
             }
-        } else if (id == R.id.txt_setting) {
-            layout_setting.setVisibility(layout_setting.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-            txt_setting.setText(layout_setting.getVisibility() == View.VISIBLE ?
-                    getString(R.string.retrieve_search_settings) : getString(R.string.expand_search_settings));
+//        } else if (id == R.id.txt_setting) {
+//            layout_setting.setVisibility(layout_setting.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+//            txt_setting.setText(layout_setting.getVisibility() == View.VISIBLE ?
+//                    getString(R.string.retrieve_search_settings) : getString(R.string.expand_search_settings));
         }    else if (id == R.id.btn_setting) {
             showPhoneInputDialog();
 
@@ -151,16 +147,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_setting = findViewById(R.id.btn_setting);
         btn_setting.setOnClickListener(this);
 
-        et_name = findViewById(R.id.et_name);
-        et_mac = findViewById(R.id.et_mac);
-        et_uuid = findViewById(R.id.et_uuid);
-        sw_auto = findViewById(R.id.sw_auto);
-
-        layout_setting = findViewById(R.id.layout_setting);
-        txt_setting = findViewById(R.id.txt_setting);
-        txt_setting.setOnClickListener(this);
-        layout_setting.setVisibility(View.GONE);
-        txt_setting.setText(getString(R.string.expand_search_settings));
+//        et_name = findViewById(R.id.et_name);
+//        et_mac = findViewById(R.id.et_mac);
+//        et_uuid = findViewById(R.id.et_uuid);
+//        sw_auto = findViewById(R.id.sw_auto);
+//
+//        layout_setting = findViewById(R.id.layout_setting);
+//        txt_setting = findViewById(R.id.txt_setting);
+//        txt_setting.setOnClickListener(this);
+//        layout_setting.setVisibility(View.GONE);
+//        txt_setting.setText(getString(R.string.expand_search_settings));
 
         img_loading = findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
@@ -257,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .setCancelable(false)
                     .show();
         } else {
-            setScanRule();
+//            setScanRule();
             startScan();
         }
     }
@@ -314,49 +310,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setScanRule() {
-        String[] uuids;
-        String str_uuid = et_uuid.getText().toString();
-        if (TextUtils.isEmpty(str_uuid)) {
-            uuids = null;
-        } else {
-            uuids = str_uuid.split(",");
-        }
-        UUID[] serviceUuids = null;
-        if (uuids != null && uuids.length > 0) {
-            serviceUuids = new UUID[uuids.length];
-            for (int i = 0; i < uuids.length; i++) {
-                String name = uuids[i];
-                String[] components = name.split("-");
-                if (components.length != 5) {
-                    serviceUuids[i] = null;
-                } else {
-                    serviceUuids[i] = UUID.fromString(uuids[i]);
-                }
-            }
-        }
-
-        String[] names;
-        String str_name = et_name.getText().toString();
-        if (TextUtils.isEmpty(str_name)) {
-            names = null;
-        } else {
-            names = str_name.split(",");
-        }
-
-        String mac = et_mac.getText().toString();
-
-        boolean isAutoConnect = sw_auto.isChecked();
-
-        BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
-                .setServiceUuids(serviceUuids)
-                .setDeviceName(true, names)
-                .setDeviceMac(mac)
-                .setAutoConnect(isAutoConnect)
-                .setScanTimeOut(10000)
-                .build();
-        BleManager.getInstance().initScanRule(scanRuleConfig);
-    }
+//    private void setScanRule() {
+//        String[] uuids;
+//        String str_uuid = et_uuid.getText().toString();
+//        if (TextUtils.isEmpty(str_uuid)) {
+//            uuids = null;
+//        } else {
+//            uuids = str_uuid.split(",");
+//        }
+//        UUID[] serviceUuids = null;
+//        if (uuids != null && uuids.length > 0) {
+//            serviceUuids = new UUID[uuids.length];
+//            for (int i = 0; i < uuids.length; i++) {
+//                String name = uuids[i];
+//                String[] components = name.split("-");
+//                if (components.length != 5) {
+//                    serviceUuids[i] = null;
+//                } else {
+//                    serviceUuids[i] = UUID.fromString(uuids[i]);
+//                }
+//            }
+//        }
+//
+//        String[] names;
+//        String str_name = et_name.getText().toString();
+//        if (TextUtils.isEmpty(str_name)) {
+//            names = null;
+//        } else {
+//            names = str_name.split(",");
+//        }
+//
+//        String mac = et_mac.getText().toString();
+//
+//        boolean isAutoConnect = sw_auto.isChecked();
+//
+//        BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
+//                .setServiceUuids(serviceUuids)
+//                .setDeviceName(true, names)
+//                .setDeviceMac(mac)
+//                .setAutoConnect(isAutoConnect)
+//                .setScanTimeOut(10000)
+//                .build();
+//        BleManager.getInstance().initScanRule(scanRuleConfig);
+//    }
 
     private void startScan() {
         BleManager.getInstance().scan(new BleScanCallback() {
@@ -437,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_OPEN_GPS) {
             if (checkGPSIsOpen()) {
-                setScanRule();
+//                setScanRule();
                 startScan();
             }
         }

@@ -78,12 +78,12 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/connected"
-                android:textColor="@color/colorPrimary"
-                android:textSize="14sp" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/connected"-->
+<!--                android:textColor="@color/colorPrimary"-->
+<!--                android:textSize="14sp" />-->
 
             <Button
                 android:id="@+id/btn_disconnect"
@@ -93,13 +93,13 @@
                 android:text="@string/disconnect"
                 android:textSize="12sp" />
 
-            <Button
-                android:id="@+id/btn_detail"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="@string/enter"
-                android:textSize="12sp" />
+<!--            <Button-->
+<!--                android:id="@+id/btn_detail"-->
+<!--                android:layout_width="80dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="5dp"-->
+<!--                android:text="@string/enter"-->
+<!--                android:textSize="12sp" />-->
 
         </LinearLayout>
 

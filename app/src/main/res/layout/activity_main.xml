@@ -18,79 +18,79 @@
             app:titleTextColor="@android:color/white"
             android:layout_gravity="center" />
 
-        <LinearLayout
-            android:id="@+id/layout_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#eeeeee"
-            android:orientation="vertical"
-            android:padding="20dp">
+<!--        <LinearLayout-->
+<!--            android:id="@+id/layout_setting"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="#eeeeee"-->
+<!--            android:orientation="vertical"-->
+<!--            android:padding="20dp">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:text="@string/scan_setting"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="12sp" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:focusable="true"-->
+<!--                android:focusableInTouchMode="true"-->
+<!--                android:text="@string/scan_setting"-->
+<!--                android:textColor="@color/colorPrimaryDark"-->
+<!--                android:textSize="12sp" />-->
 
-            <EditText
-                android:id="@+id/et_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/enter_phone"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:textSize="13sp" />
+<!--            <EditText-->
+<!--                android:id="@+id/et_phone"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/enter_phone"-->
+<!--                android:paddingLeft="5dp"-->
+<!--                android:paddingRight="5dp"-->
+<!--                android:textSize="13sp" />-->
 
-            <EditText
-                android:id="@+id/et_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/setting_name"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:textSize="13sp" />
+<!--            <EditText-->
+<!--                android:id="@+id/et_name"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/setting_name"-->
+<!--                android:paddingLeft="5dp"-->
+<!--                android:paddingRight="5dp"-->
+<!--                android:textSize="13sp" />-->
 
-            <EditText
-                android:id="@+id/et_mac"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/setting_mac"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:textSize="13sp" />
+<!--            <EditText-->
+<!--                android:id="@+id/et_mac"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/setting_mac"-->
+<!--                android:paddingLeft="5dp"-->
+<!--                android:paddingRight="5dp"-->
+<!--                android:textSize="13sp" />-->
 
-            <EditText
-                android:id="@+id/et_uuid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/setting_uuid"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:textSize="13sp" />
+<!--            <EditText-->
+<!--                android:id="@+id/et_uuid"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/setting_uuid"-->
+<!--                android:paddingLeft="5dp"-->
+<!--                android:paddingRight="5dp"-->
+<!--                android:textSize="13sp" />-->
 
-            <Switch
-                android:id="@+id/sw_auto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="AutoConnect ?"
-                android:textSize="13sp" />
+<!--            <Switch-->
+<!--                android:id="@+id/sw_auto"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:paddingLeft="5dp"-->
+<!--                android:paddingRight="5dp"-->
+<!--                android:text="AutoConnect ?"-->
+<!--                android:textSize="13sp" />-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
-        <TextView
-            android:id="@+id/txt_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="#eeeeee"
-            android:padding="10dp" />
+<!--        <TextView-->
+<!--            android:id="@+id/txt_setting"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:background="#eeeeee"-->
+<!--            android:padding="10dp" />-->
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -129,6 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:background="#FFFFFF"
                 android:divider="@android:color/darker_gray"
                 android:dividerHeight="0.5dp"
                 android:paddingStart="5dp"
@@ -148,7 +149,7 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
         android:elevation="10dp"
-        android:src="@drawable/settings"
+        android:src="@drawable/ic_setting"
         android:scaleType="centerInside" />
 
 </RelativeLayout>
